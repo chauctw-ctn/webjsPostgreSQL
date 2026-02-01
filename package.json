@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "mqtt": "node mqtt_client.js",
-    "print": "node print_data.js"
+    "print": "node print_data.js",
+    "build": "npm rebuild sqlite3"
   },
   "keywords": [
     "mqtt",
