@@ -79,62 +79,137 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-content">
-            <!-- Dashboard Section -->
-            <div class="menu-section">
+            <!-- Navigation Section -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <svg class="section-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <span>ĐIỀU HƯỚNG</span>
+                </div>
                 <button class="menu-item active" id="dashboard-btn">
-                    🏠 Dashboard
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="menu-item" id="stats-toggle-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="20" x2="12" y2="10"/>
+                        <line x1="18" y1="20" x2="18" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="16"/>
+                    </svg>
+                    <span>Thống kê dữ liệu</span>
                 </button>
             </div>
 
-            <!-- Filter Section (Visible only when Dashboard is active) -->
-            <div class="filter-section" id="filter-section">
-                <h4>Bộ lọc trạng thái trạm</h4>
-                <select id="status-filter" class="status-filter-dropdown">
-                    <option value="all">Tất cả (<span id="total-count-text">0</span> trạm)</option>
-                    <option value="online">🟢 Trạm Online (<span id="online-count-text">0</span>)</option>
-                    <option value="offline">🔴 Trạm Offline (<span id="offline-count-text">0</span>)</option>
-                </select>
-                <div class="filter-stats">
-                    <span>Tổng: <strong id="total-count">0</strong></span>
-                    <span>Online: <strong id="online-count">0</strong></span>
-                    <span>Offline: <strong id="offline-count">0</strong></span>
+            <!-- Filter Status Section -->
+            <div class="sidebar-section" id="filter-section">
+                <div class="section-header">
+                    <svg class="section-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                    </svg>
+                    <span>BỘ LỌC TRẠNG THÁI</span>
                 </div>
-            </div>
-
-            <!-- Station Dropdown Section -->
-            <div class="filter-section" id="station-list-section">
-                <h4>Danh sách trạm</h4>
-                <div class="multi-select-wrapper">
-                    <div class="multi-select-display" id="station-display">
-                        <span class="selected-text">Chọn trạm...</span>
-                        <span class="arrow">▼</span>
-                    </div>
-                    <div class="multi-select-dropdown" id="station-dropdown">
-                        <label class="checkbox-item station-all-item">
-                            <input type="checkbox" id="station-all-checkbox" class="station-all-checkbox">
-                            <span><strong>Tất cả trạm</strong></span>
-                        </label>
-                        <div class="dropdown-divider"></div>
-                        <div id="station-checkbox-list">
-                            <!-- Will be populated dynamically -->
+                <div class="filter-content">
+                    <select id="status-filter" class="status-filter-dropdown">
+                        <option value="all">Tất cả trạm</option>
+                        <option value="online">🟢 Trạm Online</option>
+                        <option value="offline">🔴 Trạm Offline</option>
+                    </select>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon total">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-label">Tổng số</div>
+                                <div class="stat-value" id="total-count">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon online">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-label">Online</div>
+                                <div class="stat-value" id="online-count">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon offline">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-label">Offline</div>
+                                <div class="stat-value" id="offline-count">0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Offline Timeout Settings -->
-            <div class="filter-section" id="offline-settings-section">
-                <h4>Cài đặt Offline</h4>
-                <div class="setting-item">
-                    <input type="number" id="offline-timeout" min="1" max="1440" value="60" class="setting-input">
+            <!-- Station List Section -->
+            <div class="sidebar-section" id="station-list-section">
+                <div class="section-header">
+                    <svg class="section-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>DANH SÁCH TRẠM</span>
+                </div>
+                <div class="filter-content">
+                    <div class="multi-select-wrapper">
+                        <div class="multi-select-display" id="station-display">
+                            <span class="selected-text">Chọn trạm...</span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="multi-select-dropdown" id="station-dropdown">
+                            <label class="checkbox-item station-all-item">
+                                <input type="checkbox" id="station-all-checkbox" class="station-all-checkbox">
+                                <span><strong>Tất cả trạm</strong></span>
+                            </label>
+                            <div class="dropdown-divider"></div>
+                            <div id="station-checkbox-list">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Statistics Section -->
-            <div class="menu-section">
-                <button class="menu-item" id="stats-toggle-btn">
-                    📊 Xem dữ liệu thống kê
-                </button>
+            <!-- Settings Section -->
+            <div class="sidebar-section" id="offline-settings-section">
+                <div class="section-header">
+                    <svg class="section-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6m6-12l-3 3m-6 6l-3 3m12-6h-6m-6 0H1m18-6l-3 3m-6 6l-3 3"/>
+                    </svg>
+                    <span>CÀI ĐẶT</span>
+                </div>
+                <div class="filter-content">
+                    <div class="setting-group">
+                        <div class="input-with-unit">
+                            <input type="number" id="offline-timeout" min="1" max="1440" value="60" class="setting-input">
+                            <span class="input-unit">phút</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

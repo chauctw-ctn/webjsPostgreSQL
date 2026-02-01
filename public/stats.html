@@ -68,38 +68,31 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-content">
-            <!-- Dashboard Section -->
-            <div class="menu-section">
-                <button class="menu-item" id="return-map-btn">
-                    🏠 Dashboard
-                </button>
-            </div>
-
-            <!-- Filter Section (Hidden on stats page) -->
-            <div class="filter-section" id="filter-section" style="display: none;">
-                <h4>Bộ lọc trạm</h4>
-                <div class="checkbox-list">
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="filter-all" value="all" checked>
-                        <span>Tất cả (<span id="total-count">0</span>)</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="filter-tva" value="tva" checked>
-                        <span class="filter-dot tva"></span>
-                        <span>TVA (<span id="tva-count">0</span>)</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="filter-mqtt" value="mqtt" checked>
-                        <span class="filter-dot mqtt"></span>
-                        <span>MQTT (<span id="mqtt-count">0</span>)</span>
-                    </label>
+            <!-- Navigation Section -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <svg class="section-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <span>ĐIỀU HƯỚNG</span>
                 </div>
-            </div>
-
-            <!-- Statistics Section -->
-            <div class="menu-section">
+                <button class="menu-item" id="return-map-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
                 <button class="menu-item active" id="stats-toggle-btn">
-                    📊 Xem dữ liệu thống kê
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="20" x2="12" y2="10"/>
+                        <line x1="18" y1="20" x2="18" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="16"/>
+                    </svg>
+                    <span>Thống kê dữ liệu</span>
                 </button>
             </div>
         </div>
