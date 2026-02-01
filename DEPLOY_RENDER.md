@@ -50,7 +50,7 @@ git push -u origin main
    - **Region**: `Singapore` (gần Việt Nam nhất)
    - **Branch**: `main`
    - **Runtime**: `Node`
-   - **Build Command**: `npm install`
+   - **Build Command**: `npm install && npm rebuild sqlite3`
    - **Start Command**: `node server.js`
    - **Instance Type**: `Free`
 
@@ -139,6 +139,13 @@ Render sẽ tự động build và deploy lại ứng dụng.
 ```powershell
 # Kiểm tra logs để xem lỗi cụ thể
 # Thường do thiếu dependencies hoặc lỗi syntax
+```
+
+### Lỗi: "invalid ELF header" (SQLite3)
+```powershell
+# Lỗi này do SQLite3 build trên Windows không tương thích với Linux
+# Giải pháp: Rebuild SQLite3 trên server
+# Đảm bảo Build Command là: npm install && npm rebuild sqlite3
 ```
 
 ### Lỗi: "Application failed to respond"

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-01T14:34:52.169Z",
+  "timestamp": "2026-02-01T14:44:55.566Z",
   "totalStations": 19,
   "stations": [
     {
@@ -156,12 +156,12 @@
     },
     {
       "station": "TRẠM BƠM 4",
-      "updateTime": "20:00 - 01/02/2026",
+      "updateTime": "21:00 - 01/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "20:00",
+          "time": "21:00",
           "value": "0.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -169,24 +169,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "20:00",
-          "value": "30.85",
+          "time": "21:00",
+          "value": "30.63",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "20:00",
-          "value": "87.40",
+          "time": "21:00",
+          "value": "85.29",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "20:00",
-          "value": "4,105,986.50",
+          "time": "21:00",
+          "value": "4,106,074.25",
           "unit": "m3",
           "limit": ""
         }
