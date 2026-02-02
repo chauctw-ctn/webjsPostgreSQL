@@ -70,18 +70,27 @@ function verifyToken(req, res, next) {
 function updateTVAData() {
     console.log('🔄 Đang cập nhật dữ liệu TVA...');
     
-    exec('node getKeyTVA.js', async (error, stdout, stderr) => {
-        if (error) {
-            console.error(`❌ Lỗi cập nhật TVA: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`⚠️ Warning TVA: ${stderr}`);
-        }
-        console.log('✅ Đã cập nhật dữ liệu TVA');
-        
-        // Lưu dữ liệu TVA vào database
-        await saveTVADataToDB();
+    return new Promise((resolve, reject) => {
+        exec('node getKeyTVA.js', async (error, stdout, stderr) => {
+            if (error) {
+                console.error(`❌ Lỗi cập nhật TVA: ${error.message}`);
+                reject(error);
+                return;
+            }
+            if (stderr) {
+                console.error(`⚠️ Warning TVA: ${stderr}`);
+            }
+            console.log('✅ Đã cập nhật dữ liệu TVA');
+            
+            // Lưu dữ liệu TVA vào database
+            try {
+                await saveTVADataToDB();
+                resolve();
+            } catch (err) {
+                console.error('❌ Lỗi lưu dữ liệu TVA:', err.message);
+                reject(err);
+            }
+        });
     });
 }
 
@@ -646,15 +655,23 @@ app.listen(PORT, async () => {
     
     // Cập nhật dữ liệu TVA ngay khi start
     console.log('📊 Đang tải dữ liệu TVA lần đầu...');
-    updateTVAData();
+    try {
+        await updateTVAData();
+    } catch (error) {
+        console.error('❌ Lỗi tải dữ liệu TVA lần đầu:', error.message);
+    }
     
     // Lưu dữ liệu MQTT hiện tại vào database
     console.log('📊 Đang lưu dữ liệu MQTT hiện tại...');
     await saveMQTTDataToDB();
     
     // Cập nhật dữ liệu TVA mỗi 5 phút
-    setInterval(() => {
-        updateTVAData();
+    setInterval(async () => {
+        try {
+            await updateTVAData();
+        } catch (error) {
+            console.error('❌ Lỗi cập nhật TVA định kỳ:', error.message);
+        }
     }, 5 * 60 * 1000); // 5 phút
     
     // Lưu dữ liệu MQTT mỗi 5 phút

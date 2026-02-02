@@ -99,10 +99,21 @@ function initMap() {
     // Tọa độ trung tâm Cà Mau
     const center = [9.177, 105.15];
     
-    // Tạo map với OpenStreetMap
+    // Detect if mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Tạo map với OpenStreetMap - optimized for mobile
     map = L.map('map', {
         scrollWheelZoom: true,
-        wheelPxPerZoomLevel: 120
+        wheelPxPerZoomLevel: 120,
+        tap: isMobile,
+        tapTolerance: 15,
+        touchZoom: true,
+        doubleClickZoom: true,
+        boxZoom: !isMobile,
+        dragging: true,
+        zoomControl: true,
+        attributionControl: true
     }).setView(center, 16);
     
     // Thêm tile layer OpenStreetMap

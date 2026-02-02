@@ -256,10 +256,13 @@ body {
     z-index: 99;
     display: none;
     transition: opacity 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
 }
 
 .sidebar-overlay.show {
     display: block;
+    opacity: 1;
 }
 
 .sidebar-content {
@@ -1157,25 +1160,64 @@ body {
 /* Responsive */
 /* Tablet & Mobile Responsive */
 @media (max-width: 768px) {
+    /* Leaflet popup adjustments for mobile */
+    .leaflet-popup-content-wrapper {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .leaflet-popup-content {
+        margin: 0;
+        min-width: 200px !important;
+        max-width: 280px !important;
+    }
+    
+    .leaflet-popup-tip {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .leaflet-container a.leaflet-popup-close-button {
+        padding: 8px;
+        font-size: 24px;
+        width: 32px;
+        height: 32px;
+        line-height: 24px;
+    }
+    
+    /* Marker labels */
+    .leaflet-tooltip {
+        font-size: 11px;
+        padding: 4px 8px;
+        white-space: nowrap;
+    }
+    
     .header-content {
         flex-direction: row;
         padding: 0;
+        gap: 10px;
     }
     
     .company-info h1 {
-        font-size: 13px;
-        line-height: 1.3;
+        font-size: 14px;
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .menu-btn {
-        padding: 5px 8px;
-        font-size: 20px;
+        padding: 8px 10px;
+        font-size: 22px;
+        min-width: 48px;
+        min-height: 48px;
     }
     
     .sidebar {
         width: 100%;
-        max-width: 280px;
+        max-width: 300px;
         left: -100%;
+        transition: left 0.3s ease-in-out;
     }
     
     .sidebar:not(.hidden) {
@@ -1187,20 +1229,31 @@ body {
         width: 100% !important;
         margin-left: 0 !important;
         height: calc(100vh - 56px);
+        touch-action: pan-x pan-y;
     }
     
     .station-popup {
-        min-width: 180px;
-        padding: 10px 12px;
+        min-width: 200px;
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+    
+    .popup-header {
+        font-size: 15px;
+    }
+    
+    .data-row {
+        padding: 6px 0;
     }
     
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
+        gap: 8px;
     }
     
     .stat-card {
-        padding: 8px;
+        padding: 10px;
+        min-height: 70px;
     }
     
     .user-menu-btn {
@@ -1218,18 +1271,64 @@ body {
 
 /* Mobile Specific */
 @media (max-width: 480px) {
-    .header {
-        padding: 8px 12px;
-        height: 52px;
+    /* Better popup sizing for small screens */
+    .leaflet-popup-content {
+        min-width: 180px !important;
+        max-width: 260px !important;
+        font-size: 12px;
     }
     
-    .company-info h1 {
+    .station-popup {
+        font-size: 12px;
+    }
+    
+    .popup-header {
+        font-size: 14px;
+        padding-bottom: 6px;
+    }
+    
+    .data-row {
+        padding: 5px 0;
+    }
+    
+    .data-label {
         font-size: 11px;
     }
     
+    .data-value {
+        font-size: 11px;
+        padding: 2px 8px;
+    }
+    
+    /* Larger touch targets for map controls */
+    .leaflet-control-zoom a {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        font-size: 20px;
+    }
+    
+    .leaflet-touch .leaflet-bar a {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+    }
+    
+    .header {
+        padding: 6px 10px;
+        height: 56px;
+    }
+    
+    .company-info h1 {
+        font-size: 10px;
+        letter-spacing: 0;
+    }
+    
     .menu-btn {
-        padding: 4px 6px;
-        font-size: 18px;
+        padding: 6px 8px;
+        font-size: 20px;
+        min-width: 44px;
+        min-height: 44px;
     }
     
     .sidebar {
@@ -1238,46 +1337,77 @@ body {
     }
     
     .sidebar-content {
-        padding: 12px;
-        gap: 12px;
+        padding: 10px;
+        gap: 10px;
     }
     
     .section-header {
-        padding: 10px 12px;
-        font-size: 10px;
+        padding: 10px;
+        font-size: 11px;
     }
     
     .filter-content {
-        padding: 12px;
+        padding: 10px;
     }
     
     .checkbox-item {
-        padding: 6px;
+        padding: 8px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
     }
     
     .checkbox-item span {
         font-size: 13px;
+        line-height: 1.4;
+    }
+    
+    .status-filter-dropdown {
+        font-size: 14px;
+        padding: 10px;
+        min-height: 44px;
     }
     
     #map {
-        height: calc(100vh - 52px);
+        height: calc(100vh - 56px);
     }
     
     .modal-content {
         width: 95%;
         max-width: none;
+        margin: 10px;
     }
     
     .modal-header {
-        padding: 16px;
+        padding: 14px;
     }
     
     .modal-header h2 {
-        font-size: 16px;
+        font-size: 15px;
     }
     
     .modal form {
-        padding: 16px;
+        padding: 14px;
+    }
+    
+    .form-group input,
+    .form-group select {
+        font-size: 16px;
+        padding: 12px;
+        min-height: 44px;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        min-height: 44px;
+        padding: 12px 20px;
+        font-size: 15px;
     }
     
     .stats-grid {
