@@ -3,13 +3,23 @@ const path = require('path');
 
 // Tạo hoặc mở database
 const dbPath = path.join(__dirname, 'water_monitoring.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('❌ Lỗi kết nối database:', err.message);
-    } else {
-        console.log('✅ Đã kết nối tới SQLite database:', dbPath);
-    }
-});
+let db;
+
+try {
+    db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+        if (err) {
+            console.error('❌ Lỗi kết nối database:', err.message);
+            console.error('💡 Kiểm tra quyền ghi file và cài đặt sqlite3');
+            process.exit(1);
+        } else {
+            console.log('✅ Đã kết nối tới SQLite database:', dbPath);
+        }
+    });
+} catch (error) {
+    console.error('❌ Lỗi khởi tạo SQLite3:', error.message);
+    console.error('💡 Đảm bảo sqlite3 đã được cài đặt: npm rebuild --build-from-source sqlite3');
+    process.exit(1);
+}
 
 /**
  * Khởi tạo các bảng trong database

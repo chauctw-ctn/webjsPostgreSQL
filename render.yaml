@@ -2,8 +2,15 @@ services:
   - type: web
     name: camau-water-monitoring
     runtime: node
-    buildCommand: npm install && npm rebuild sqlite3
+    buildCommand: bash build.sh
     startCommand: node server.js
+    healthCheckPath: /api/stations
+    disk:
+      name: water-monitoring-data
+      mountPath: /opt/render/project/src
+      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: 18.19.0
