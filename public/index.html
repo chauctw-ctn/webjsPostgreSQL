@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <title>VIWATER - Hệ thống SCADA Quản lý Mạng lưới Cấp nước</title>
+    <title>Công ty Cổ phần Cấp nước Cà Mau</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,9 +22,15 @@
             <button class="menu-btn" id="menu-btn">☰</button>
             <div class="logo-section">
                 <div class="company-info">
-                    <h1>HỆ THỐNG SCADA QUẢN LÝ MẠNG LƯỚI CẤP NƯỚC</h1>
+                    <h1 class="company-name">CÔNG TY CỔ PHẦN CẤP NƯỚC CÀ MAU</h1>
+                    <p class="company-address">204 Quang Trung, P. Tân Thành, Cà Mau</p>
+                    <p class="company-contact"><span class="contact-label">Hotline:</span> 02903 836 360</p>
                 </div>
-            </div>            <div class="auth-section">
+            </div>
+            <div class="current-time-section">
+                <span id="current-time"></span>
+            </div>
+            <div class="auth-section">
                 <span id="username-display"></span>
                 <div class="user-menu-container">
                     <button id="user-menu-btn" class="user-menu-btn">
@@ -208,7 +214,7 @@
                         <circle cx="12" cy="12" r="3"/>
                         <path d="M12 1v6m0 6v6m6-12l-3 3m-6 6l-3 3m12-6h-6m-6 0H1m18-6l-3 3m-6 6l-3 3"/>
                     </svg>
-                    <span>CÀI ĐẶT</span>
+                    <span>CÀI ĐẶT THỜI GIAN OFFLINE </span>
                 </div>
                 <div class="filter-content">
                     <div class="setting-group">
