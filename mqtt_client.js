@@ -77,7 +77,18 @@ function formatLimit(min, max) {
  */
 function processMessage(message) {
     try {
-        const payload = JSON.parse(message);
+        // Kiểm tra message có hợp lệ không
+        if (!message || typeof message !== 'string') {
+            return;
+        }
+        
+        // Kiểm tra xem có phải JSON hợp lệ không
+        const trimmed = message.trim();
+        if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+            return;
+        }
+        
+        const payload = JSON.parse(trimmed);
         
         // Bỏ qua message không phải data
         if (!payload.d || !Array.isArray(payload.d)) {
@@ -228,8 +239,20 @@ function connectMQTT() {
         });
 
         mqttClient.on('message', (topic, message) => {
+            const messageStr = message.toString();
+            
+            // Bỏ qua các message không hợp lệ hoặc chỉ là topic name
+            if (!messageStr || messageStr === topic || messageStr.startsWith('telemetry')) {
+                return;
+            }
+            
+            // Kiểm tra xem có phải JSON không
+            if (!messageStr.startsWith('{') && !messageStr.startsWith('[')) {
+                return;
+            }
+            
             console.log(`\n📩 Nhận message từ topic: ${topic}`);
-            processMessage(message.toString());
+            processMessage(messageStr);
         });
 
         mqttClient.on('error', (error) => {
