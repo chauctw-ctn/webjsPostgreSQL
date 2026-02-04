@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-02-03T12:44:09.802Z",
+  "timestamp": "2026-02-04T05:43:00.603Z",
   "totalStations": 19,
   "stations": [
     {
       "station": "NHÀ MÁY SỐ 1 - GIẾNG SỐ 1",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "23.21",
           "unit": "oC",
           "limit": "0 - 42"
@@ -17,24 +17,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "31.17",
+          "time": "12:00",
+          "value": "30.90",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "105.07",
+          "time": "12:00",
+          "value": "95.56",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "3,570,395.50",
+          "time": "12:00",
+          "value": "3,571,221.00",
           "unit": "m3",
           "limit": ""
         }
@@ -42,12 +42,12 @@
     },
     {
       "station": "NHÀ MÁY SỐ 2 - GIẾNG SỐ 3",
-      "updateTime": "18:00 - 03/02/2026",
+      "updateTime": "11:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "18:00",
+          "time": "11:00",
           "value": "27.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -55,24 +55,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "18:00",
-          "value": "28.91",
+          "time": "11:00",
+          "value": "28.80",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "18:00",
-          "value": "89.93",
+          "time": "11:00",
+          "value": "90.49",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "18:00",
-          "value": "3,801,584.00",
+          "time": "11:00",
+          "value": "3,802,756.75",
           "unit": "m3",
           "limit": ""
         }
@@ -80,20 +80,20 @@
     },
     {
       "station": "TRẠM BƠM 22",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
-          "value": "37.84",
+          "time": "12:00",
+          "value": "37.41",
           "unit": "oC",
           "limit": "0 - 42"
         },
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
+          "time": "12:00",
           "value": "28.03",
           "unit": "m",
           "limit": "0 - 34"
@@ -101,16 +101,16 @@
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "113.72",
+          "time": "12:00",
+          "value": "113.82",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "4,176,980.25",
+          "time": "12:00",
+          "value": "4,178,442.00",
           "unit": "m3",
           "limit": ""
         }
@@ -118,12 +118,12 @@
     },
     {
       "station": "TRẠM BƠM 26",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:01 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:01",
           "value": "34.04",
           "unit": "oC",
           "limit": "0 - 42"
@@ -131,24 +131,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "32.53",
+          "time": "12:01",
+          "value": "32.29",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "83.62",
+          "time": "12:01",
+          "value": "82.58",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "539,692.00",
+          "time": "12:01",
+          "value": "540,945.56",
           "unit": "m3",
           "limit": ""
         }
@@ -156,12 +156,12 @@
     },
     {
       "station": "TRẠM BƠM 4",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -169,24 +169,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "30.88",
+          "time": "12:00",
+          "value": "30.46",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "88.88",
+          "time": "12:00",
+          "value": "85.15",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "4,109,682.75",
+          "time": "12:00",
+          "value": "4,110,909.25",
           "unit": "m3",
           "limit": ""
         }
@@ -194,12 +194,12 @@
     },
     {
       "station": "TRẠM BƠM 16",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -207,24 +207,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "28.90",
+          "time": "12:00",
+          "value": "28.97",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "51.24",
+          "time": "12:00",
+          "value": "51.68",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "2,663,640.75",
+          "time": "12:00",
+          "value": "2,664,576.75",
           "unit": "m3",
           "limit": ""
         }
@@ -232,12 +232,12 @@
     },
     {
       "station": "TRẠM BƠM 20",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "37.80",
           "unit": "oC",
           "limit": "0 - 42"
@@ -245,24 +245,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "31.08",
+          "time": "12:00",
+          "value": "30.83",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "82.53",
+          "time": "12:00",
+          "value": "0.00",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "3,222,232.75",
+          "time": "12:00",
+          "value": "3,223,073.75",
           "unit": "m3",
           "limit": ""
         }
@@ -270,20 +270,20 @@
     },
     {
       "station": "TRẠM BƠM 23",
-      "updateTime": "18:00 - 03/02/2026",
+      "updateTime": "11:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "18:00",
-          "value": "36.53",
+          "time": "11:00",
+          "value": "36.47",
           "unit": "oC",
           "limit": "0 - 42"
         },
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "18:00",
+          "time": "11:00",
           "value": "29.40",
           "unit": "m",
           "limit": "0 - 34"
@@ -291,16 +291,16 @@
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "18:00",
-          "value": "82.85",
+          "time": "11:00",
+          "value": "81.45",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "18:00",
-          "value": "3,629,453.75",
+          "time": "11:00",
+          "value": "3,630,608.75",
           "unit": "m3",
           "limit": ""
         }
@@ -308,37 +308,37 @@
     },
     {
       "station": "TRẠM BƠM 12",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
-          "value": "38.39",
+          "time": "12:00",
+          "value": "38.70",
           "unit": "oC",
           "limit": "0 - 42"
         },
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "32.84",
+          "time": "12:00",
+          "value": "32.62",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "88.49",
+          "time": "12:00",
+          "value": "87.60",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "127,863.00",
+          "time": "12:00",
+          "value": "128,931.00",
           "unit": "m3",
           "limit": ""
         }
@@ -346,12 +346,12 @@
     },
     {
       "station": "TRẠM BƠM 21",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "37.80",
           "unit": "oC",
           "limit": "0 - 42"
@@ -359,24 +359,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "30.96",
+          "time": "12:00",
+          "value": "30.71",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "100.60",
+          "time": "12:00",
+          "value": "99.03",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "3,454,140.75",
+          "time": "12:00",
+          "value": "3,455,052.50",
           "unit": "m3",
           "limit": ""
         }
@@ -384,12 +384,12 @@
     },
     {
       "station": "QT3 (182/GP-BTNMT)",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -397,8 +397,8 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "25.78",
+          "time": "12:00",
+          "value": "25.52",
           "unit": "m",
           "limit": "0 - 34"
         }
@@ -406,12 +406,12 @@
     },
     {
       "station": "QT1-NM1 (2186/GP-BTNMT)",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "25.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -419,8 +419,8 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "27.26",
+          "time": "12:00",
+          "value": "27.16",
           "unit": "m",
           "limit": "0 - 34"
         }
@@ -428,12 +428,12 @@
     },
     {
       "station": "QT2-NM1 (2186/GP-BTNMT)",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "25.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -441,8 +441,8 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "26.71",
+          "time": "12:00",
+          "value": "27.13",
           "unit": "m",
           "limit": "0 - 34"
         }
@@ -450,12 +450,12 @@
     },
     {
       "station": "TRẠM BƠM 2",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "22.37",
           "unit": "oC",
           "limit": "0 - 42"
@@ -463,15 +463,15 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "31.29",
+          "time": "12:00",
+          "value": "30.67",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3/h",
           "limit": ""
@@ -479,7 +479,7 @@
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3",
           "limit": ""
@@ -488,12 +488,12 @@
     },
     {
       "station": "TRẠM BƠM 27",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "22.54",
           "unit": "oC",
           "limit": "0 - 42"
@@ -501,7 +501,7 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
+          "time": "12:00",
           "value": "26.12",
           "unit": "m",
           "limit": "0 - 34"
@@ -509,7 +509,7 @@
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3/h",
           "limit": ""
@@ -517,7 +517,7 @@
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3",
           "limit": ""
@@ -526,28 +526,28 @@
     },
     {
       "station": "NHÀ MÁY SỐ 1 - GIẾNG SỐ 3",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
-          "value": "22.82",
+          "time": "12:00",
+          "value": "22.76",
           "unit": "oC",
           "limit": "0 - 42"
         },
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "25.74",
+          "time": "12:00",
+          "value": "31.70",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3/h",
           "limit": ""
@@ -555,7 +555,7 @@
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3",
           "limit": ""
@@ -564,12 +564,12 @@
     },
     {
       "station": "NHÀ MÁY SỐ 2 - GIẾNG SỐ 2",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -577,15 +577,15 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "31.03",
+          "time": "12:00",
+          "value": "31.00",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3/h",
           "limit": ""
@@ -593,7 +593,7 @@
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "m3",
           "limit": ""
@@ -602,37 +602,37 @@
     },
     {
       "station": "TRẠM BƠM 24",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
-          "value": "32.01",
+          "time": "12:00",
+          "value": "33.30",
           "unit": "oC",
           "limit": "0 - 42"
         },
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "31.39",
+          "time": "12:00",
+          "value": "29.94",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "83.81",
+          "time": "12:00",
+          "value": "83.62",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "814,900.25",
+          "time": "12:00",
+          "value": "815,804.38",
           "unit": "m3",
           "limit": ""
         }
@@ -640,12 +640,12 @@
     },
     {
       "station": "TRẠM BƠM 25",
-      "updateTime": "19:00 - 03/02/2026",
+      "updateTime": "12:00 - 04/02/2026",
       "data": [
         {
           "stt": "1",
           "name": "Nhiệt Độ",
-          "time": "19:00",
+          "time": "12:00",
           "value": "0.00",
           "unit": "oC",
           "limit": "0 - 42"
@@ -653,24 +653,24 @@
         {
           "stt": "2",
           "name": "Mực Nước",
-          "time": "19:00",
-          "value": "33.07",
+          "time": "12:00",
+          "value": "33.06",
           "unit": "m",
           "limit": "0 - 34"
         },
         {
           "stt": "3",
           "name": "Lưu Lượng",
-          "time": "19:00",
-          "value": "75.40",
+          "time": "12:00",
+          "value": "74.92",
           "unit": "m3/h",
           "limit": ""
         },
         {
           "stt": "4",
           "name": "Tổng Lưu Lượng",
-          "time": "19:00",
-          "value": "823,803.94",
+          "time": "12:00",
+          "value": "824,793.38",
           "unit": "m3",
           "limit": ""
         }

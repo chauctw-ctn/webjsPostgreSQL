@@ -5,6 +5,41 @@ let allStations = [];
 let currentFilter = 'all';
 let offlineTimeoutMinutes = 60; // Default 60 minutes
 
+function createStationIcon(station) {
+    const offline = isStationOffline(station);
+    const iconColor = offline ? '#dc2626' : (station.type === 'TVA' ? '#10b981' : '#fbbf24');
+    const blinkClass = offline ? 'blink' : '';
+    return L.divIcon({
+        className: `custom-marker ${blinkClass}`,
+        html: `<div class="marker-dot ${blinkClass}" style="background-color: ${iconColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+    });
+}
+
+function enablePopupWheelZoom(popupEl) {
+    if (!popupEl || !map) return;
+    const content = popupEl.querySelector('.leaflet-popup-content');
+    if (!content) return;
+
+    // Remove existing handler if any (avoid stacking)
+    if (content._popupWheelZoomHandler) {
+        L.DomEvent.off(content, 'wheel', content._popupWheelZoomHandler);
+        content._popupWheelZoomHandler = null;
+    }
+
+    const handler = function (e) {
+        const delta = e.deltaY || e.detail || e.wheelDelta;
+        const zoomDelta = delta > 0 ? -1 : 1;
+        map.setZoom(map.getZoom() + zoomDelta);
+        L.DomEvent.preventDefault(e);
+        L.DomEvent.stopPropagation(e);
+    };
+
+    content._popupWheelZoomHandler = handler;
+    L.DomEvent.on(content, 'wheel', handler);
+}
+
 /**
  * Format date to dd/mm/yyyy HH:mm:ss
  */
@@ -115,6 +150,10 @@ function initMap() {
         zoomControl: true,
         attributionControl: true
     }).setView(center, 16);
+
+    // Expose for other scripts (e.g., header.js) to invalidate size
+    window.map = map;
+    window.leafletMap = map;
     
     // Thêm tile layer OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -186,32 +225,56 @@ async function refreshStations() {
             allStations = data.stations;
             updateStats(data.stations);
             
-            // Cập nhật nội dung popup cho từng marker đang mở
+            // Cập nhật dữ liệu + popup/icon/tooltip cho markers (kể cả popup đang đóng)
             markers.forEach(marker => {
                 // Tìm station data mới cho marker này
-                const newStationData = allStations.find(s => s.id === marker.stationId);
+                const newStationData = allStations.find(s => String(s.id) === String(marker.stationId));
                 
                 if (newStationData) {
                     // Cập nhật station data trong marker
                     marker.stationData = newStationData;
+
+                    // Update marker icon (online/offline + type)
+                    try {
+                        marker.setIcon(createStationIcon(newStationData));
+                    } catch (e) {
+                        // ignore icon update failures
+                    }
+
+                    // Update tooltip content + class (online/offline)
+                    try {
+                        const offline = isStationOffline(newStationData);
+                        const labelClass = offline ? 'station-label offline' : 'station-label';
+                        if (marker.getTooltip()) {
+                            marker.unbindTooltip();
+                        }
+                        marker.bindTooltip(newStationData.name, {
+                            permanent: true,
+                            direction: 'top',
+                            offset: [0, -8],
+                            className: labelClass
+                        });
+                        if (!marker.isPopupOpen()) marker.openTooltip();
+                    } catch (e) {
+                        // ignore tooltip update failures
+                    }
+
+                    // Always update popup content so next open shows latest data
+                    try {
+                        const newContent = createPopupContent(newStationData);
+                        const popup = marker.getPopup();
+                        if (popup) popup.setContent(newContent);
+                    } catch (e) {
+                        // ignore popup update failures
+                    }
                     
                     // Nếu popup đang mở, cập nhật nội dung
                     if (marker.isPopupOpen()) {
-                        const newContent = createPopupContent(newStationData);
-                        marker.getPopup().setContent(newContent);
-                        
-                        // Fix zoom cho popup sau khi update content
+                        // Re-bind wheel-zoom handler after DOM content changed
                         setTimeout(() => {
-                            const popupEl = marker.getPopup().getElement();
-                            if (popupEl) {
-                                const parent = popupEl.parentElement;
-                                if (parent) {
-                                    L.DomEvent.off(parent, 'wheel');
-                                    L.DomEvent.off(parent, 'mousewheel');
-                                    L.DomEvent.off(popupEl, 'wheel');
-                                    L.DomEvent.off(popupEl, 'mousewheel');
-                                }
-                            }
+                            const popup = marker.getPopup();
+                            const popupEl = popup ? popup.getElement() : null;
+                            enablePopupWheelZoom(popupEl);
                         }, 50);
                     }
                 }
@@ -245,16 +308,9 @@ function displayMarkers(stations) {
         
         // Check if station is offline
         const offline = isStationOffline(station);
-        
+
         // Tạo custom icon
-        const iconColor = offline ? '#dc2626' : (station.type === 'TVA' ? '#10b981' : '#fbbf24');
-        const blinkClass = offline ? 'blink' : '';
-        const customIcon = L.divIcon({
-            className: `custom-marker ${blinkClass}`,
-            html: `<div class="marker-dot ${blinkClass}" style="background-color: ${iconColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-            iconSize: [16, 16],
-            iconAnchor: [8, 8]
-        });
+        const customIcon = createStationIcon(station);
         
         // Tạo marker
         const marker = L.marker(position, { icon: customIcon }).addTo(map);
@@ -297,20 +353,7 @@ function displayMarkers(stations) {
             // FIX: Cho phép zoom bằng scroll wheel khi chuột ở trong popup
             setTimeout(() => {
                 const popupEl = this.getPopup().getElement();
-                if (popupEl) {
-                    const content = popupEl.querySelector('.leaflet-popup-content');
-                    if (content) {
-                        // Enable scroll propagation để map có thể zoom
-                        L.DomEvent.on(content, 'wheel', function(e) {
-                            // Tính toán zoom mới
-                            const delta = e.deltaY || e.detail || e.wheelDelta;
-                            const zoomDelta = delta > 0 ? -1 : 1;
-                            map.setZoom(map.getZoom() + zoomDelta);
-                            L.DomEvent.preventDefault(e);
-                            L.DomEvent.stopPropagation(e);
-                        });
-                    }
-                }
+                enablePopupWheelZoom(popupEl);
             }, 50);
         });
         
@@ -344,19 +387,37 @@ function createPopupContent(station) {
     const offline = isStationOffline(station);
     
     // Format update time to dd/mm/yyyy HH:mm:ss
+    // Ưu tiên dùng timestamp từ database (lastUpdateInDB hoặc timestamp) để đồng bộ với bảng thống kê
     let formattedUpdateTime = 'N/A';
-    if (station.updateTime) {
+    const dbTimestamp = station.lastUpdateInDB || station.timestamp;
+    
+    if (dbTimestamp) {
         try {
-            // Try to parse the date (handles both ISO and other formats)
+            const updateDate = new Date(dbTimestamp);
+            if (!isNaN(updateDate.getTime())) {
+                formattedUpdateTime = formatDateTime(updateDate);
+            } else if (station.updateTime) {
+                // Fallback: try updateTime from JSON
+                const fallbackDate = new Date(station.updateTime);
+                if (!isNaN(fallbackDate.getTime())) {
+                    formattedUpdateTime = formatDateTime(fallbackDate);
+                } else {
+                    formattedUpdateTime = station.updateTime;
+                }
+            }
+        } catch (e) {
+            formattedUpdateTime = station.updateTime || 'N/A';
+        }
+    } else if (station.updateTime) {
+        // Fallback: use updateTime if no database timestamp
+        try {
             const updateDate = new Date(station.updateTime);
             if (!isNaN(updateDate.getTime())) {
                 formattedUpdateTime = formatDateTime(updateDate);
             } else {
-                // If parsing fails, try to use the string as is
                 formattedUpdateTime = station.updateTime;
             }
         } catch (e) {
-            // If any error, use the string as is
             formattedUpdateTime = station.updateTime || 'N/A';
         }
     }
@@ -602,50 +663,26 @@ function showLoading(show) {
  * Setup event listeners
  */
 function setupEventListeners() {
-    // Menu button toggle sidebar
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const sidebar = document.getElementById('sidebar');
     const mapElement = document.getElementById('map');
-    
-    if (menuBtn && sidebar && mapElement) {
-        menuBtn.addEventListener('click', () => {
-            const isHidden = sidebar.classList.toggle('hidden');
-            
-            if (isHidden) {
-                mapElement.classList.remove('with-sidebar');
-                if (sidebarOverlay) sidebarOverlay.classList.remove('show');
-            } else {
-                mapElement.classList.add('with-sidebar');
-                // Show overlay on mobile
-                if (window.innerWidth <= 768 && sidebarOverlay) {
-                    sidebarOverlay.classList.add('show');
-                }
-            }
-            
-            // Resize map sau khi toggle
-            setTimeout(() => {
-                if (map) {
-                    map.invalidateSize();
-                }
-            }, 350);
+
+    // Sidebar is controlled globally by header.js; just react and resize the map.
+    window.addEventListener('sidebar:toggled', () => {
+        setTimeout(() => {
+            if (map) map.invalidateSize();
+        }, 360);
+    });
+
+    // Also invalidate on actual container resize (covers edge cases)
+    if (mapElement && 'ResizeObserver' in window) {
+        let resizeRaf = 0;
+        const ro = new ResizeObserver(() => {
+            if (!map) return;
+            cancelAnimationFrame(resizeRaf);
+            resizeRaf = requestAnimationFrame(() => map.invalidateSize());
         });
-    }
-    
-    // Close sidebar when clicking overlay (mobile)
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.add('hidden');
-            sidebarOverlay.classList.remove('show');
-            if (mapElement) {
-                mapElement.classList.remove('with-sidebar');
-            }
-            setTimeout(() => {
-                if (map) {
-                    map.invalidateSize();
-                }
-            }, 350);
-        });
+        ro.observe(mapElement);
     }
     
     // Dashboard button - Already on dashboard, just ensure it's active
@@ -717,11 +754,13 @@ function setupEventListeners() {
     
     // Handle window resize for overlay visibility
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 768 && sidebarOverlay) {
-            sidebarOverlay.classList.remove('show');
-        } else if (window.innerWidth <= 768 && sidebarOverlay && !sidebar.classList.contains('hidden')) {
-            sidebarOverlay.classList.add('show');
-        }
+        // Keep overlay state consistent with header.js behavior
+        if (!sidebarOverlay || !sidebar) return;
+        const open = sidebar.classList.contains('active');
+        const showOverlay = open && window.innerWidth <= 768;
+        sidebarOverlay.classList.toggle('active', showOverlay);
+        sidebarOverlay.classList.toggle('show', showOverlay);
+        if (map) map.invalidateSize();
     });
     
     // Auto refresh dữ liệu mỗi 30 giây (MQTT realtime) và mỗi 2 phút (TVA)
@@ -751,10 +790,4 @@ function updateCurrentTime() {
 // Khởi tạo map khi DOM ready
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
-    
-    // Cập nhật thời gian ngay lập tức
-    updateCurrentTime();
-    
-    // Cập nhật thời gian mỗi giây
-    setInterval(updateCurrentTime, 1000);
 });

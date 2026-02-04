@@ -11,6 +11,11 @@ function createHeader(pageTitle = '') {
                     <p class="company-contact"><span class="contact-label">Hotline:</span> 02903 836 360</p>
                 </div>
             </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">🏠 Trang chủ</a>
+                <a href="scada.html" class="nav-link">CHẤT LƯỢNG NƯỚC</a>
+                <a href="stats.html" class="nav-link">📊 Thống kê</a>
+            </nav>
             <div class="current-time-section">
                 <span id="current-time"></span>
             </div>
@@ -75,6 +80,71 @@ function initializeHeader() {
     }
     updateTime();
     setInterval(updateTime, 1000);
+
+    // Sidebar toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const mapElement = document.getElementById('map');
+    const scadaMain = document.getElementById('scada-main');
+    const mainContent = document.querySelector('main.container');
+    const statsMain = document.querySelector('main:not(.container):not(.scada-main)'); // Stats page main
+
+    function requestMapResize() {
+        // Leaflet map instance is created in map.js; keep this resilient.
+        const leafletMap = (typeof window !== 'undefined' && (window.map || window.leafletMap)) || null;
+        if (leafletMap && leafletMap.invalidateSize) {
+            leafletMap.invalidateSize();
+        }
+    }
+
+    function applySidebarState(open) {
+        if (sidebar) {
+            sidebar.classList.toggle('active', open);
+            // Keep legacy state consistent if any code still uses it
+            sidebar.classList.toggle('hidden', !open);
+        }
+
+        // Only show overlay on mobile
+        if (sidebarOverlay) {
+            const showOverlay = open && window.innerWidth <= 768;
+            sidebarOverlay.classList.toggle('active', showOverlay);
+            sidebarOverlay.classList.toggle('show', showOverlay);
+        }
+
+        // Toggle with-sidebar class for layout adjustment
+        if (mapElement) mapElement.classList.toggle('with-sidebar', open);
+        if (scadaMain) scadaMain.classList.toggle('with-sidebar', open);
+        if (mainContent) mainContent.classList.toggle('with-sidebar', open);
+        
+        // Handle stats page main element
+        if (statsMain) {
+            statsMain.classList.toggle('with-sidebar', open);
+            statsMain.classList.toggle('sidebar-hidden', !open);
+        }
+
+        localStorage.setItem('sidebarOpen', String(open));
+
+        // Notify pages/components (e.g., Leaflet map) to reflow
+        window.dispatchEvent(new CustomEvent('sidebar:toggled', { detail: { open } }));
+
+        // Resize after CSS transition ends
+        setTimeout(requestMapResize, 350);
+    }
+
+    function toggleSidebar() {
+        const currentlyOpen = !!(sidebar && sidebar.classList.contains('active'));
+        applySidebarState(!currentlyOpen);
+    }
+
+    if (menuBtn) {
+        menuBtn.addEventListener('click', toggleSidebar);
+    }
+    
+    // Close sidebar when clicking overlay
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => applySidebarState(false));
+    }
 
     // User menu toggle
     const userMenuBtn = document.getElementById('user-menu-btn');

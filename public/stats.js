@@ -4,6 +4,7 @@ let currentPage = 1;
 let rowsPerPage = 50;
 let filteredData = [];
 let currentParameterNames = [];
+let visibleColumnIndices = []; // Indices of columns that have data
 
 /**
  * Format date to dd/mm/yyyy
@@ -129,25 +130,63 @@ function setDefaultDates() {
 async function loadStations() {
     try {
         console.log('Loading stations from API...');
-        const response = await fetch('/api/stations');
-        console.log('Response status:', response.status);
         
-        if (!response.ok) {
-            throw new Error(`Failed to load stations: ${response.status} ${response.statusText}`);
+        // Fetch both regular stations (TVA+MQTT) and SCADA stations
+        const [regularResponse, scadaResponse] = await Promise.all([
+            fetch('/api/stations'),
+            fetch('/api/scada/cached').catch(() => ({ ok: false }))
+        ]);
+        
+        console.log('Regular stations status:', regularResponse.status);
+        console.log('SCADA stations status:', scadaResponse.ok ? 200 : 'failed');
+        
+        allStations = [];
+        
+        // Add regular stations (TVA + MQTT)
+        if (regularResponse.ok) {
+            const data = await regularResponse.json();
+            if (data.success && data.stations) {
+                allStations = [...data.stations];
+                console.log('Loaded regular stations:', allStations.length);
+            }
         }
         
-        const data = await response.json();
-        console.log('API response:', data);
-        
-        if (data.success && data.stations) {
-            allStations = data.stations;
-            console.log('Loaded stations:', allStations.length);
-            populateStationSelect();
-        } else {
-            allStations = [];
-            console.warn('No stations data found in response');
-            populateStationSelect();
+        // Add SCADA stations (quality monitoring)
+        if (scadaResponse.ok) {
+            const scadaData = await scadaResponse.json();
+            if (scadaData.success !== false && scadaData.stationsGrouped) {
+                const scadaStations = Object.values(scadaData.stationsGrouped);
+                scadaStations.forEach(station => {
+                    // Convert SCADA station to stats format
+                    const stationData = [];
+                    if (station.parameters && Array.isArray(station.parameters)) {
+                        station.parameters.forEach(p => {
+                            stationData.push({
+                                name: p.parameterName || p.parameter,
+                                value: p.displayText || p.value || '--',
+                                unit: p.unit || ''
+                            });
+                        });
+                    }
+                    
+                    allStations.push({
+                        id: `scada_${station.station}`,
+                        name: station.stationName || station.station,
+                        type: 'SCADA',
+                        lat: null,
+                        lng: null,
+                        updateTime: scadaData.timestamp,
+                        data: stationData,
+                        group: station.group
+                    });
+                });
+                console.log('Loaded SCADA stations:', scadaStations.length);
+            }
         }
+        
+        console.log('Total stations loaded:', allStations.length);
+        populateStationSelect();
+        
     } catch (error) {
         console.error('Error loading stations:', error);
         // Don't show alert, just log the error and continue with empty list
@@ -173,6 +212,7 @@ function populateStationSelect() {
     // Update counts (only if elements exist in sidebar)
     const tvaStations = allStations.filter(s => s.type === 'TVA');
     const mqttStations = allStations.filter(s => s.type === 'MQTT');
+    const scadaStations = allStations.filter(s => s.type === 'SCADA');
     
     const allCountEl = document.getElementById('all-count');
     const tvaCountEl = document.getElementById('tva-count');
@@ -186,9 +226,10 @@ function populateStationSelect() {
     allStations.forEach(station => {
         const label = document.createElement('label');
         label.className = 'checkbox-item';
+        const typeLabel = station.type === 'SCADA' ? 'CLN' : station.type;
         label.innerHTML = `
             <input type="checkbox" value="${station.id}" class="station-checkbox">
-            <span>${station.name} (${station.type})</span>
+            <span>${station.name} (${typeLabel})</span>
         `;
         stationList.appendChild(label);
     });
@@ -200,38 +241,8 @@ function populateStationSelect() {
  * Setup event listeners
  */
 function setupEventListeners() {
-    // Menu button - toggle sidebar
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const main = document.querySelector('main');
-    
-    if (menuBtn && sidebar && main) {
-        menuBtn.addEventListener('click', () => {
-            const isHidden = sidebar.classList.toggle('hidden');
-            main.classList.toggle('sidebar-hidden');
-            
-            // Show/hide overlay on mobile
-            if (window.innerWidth <= 768 && sidebarOverlay) {
-                if (isHidden) {
-                    sidebarOverlay.classList.remove('show');
-                } else {
-                    sidebarOverlay.classList.add('show');
-                }
-            }
-        });
-    }
-    
-    // Close sidebar when clicking overlay (mobile)
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.add('hidden');
-            sidebarOverlay.classList.remove('show');
-            if (main) {
-                main.classList.add('sidebar-hidden');
-            }
-        });
-    }
+    // Note: Menu button and sidebar toggle is handled by header.js
+    // We don't need to duplicate that logic here
     
     // Return to map button (Dashboard)
     const returnMapBtn = document.getElementById('return-map-btn');
@@ -379,7 +390,7 @@ async function loadStatsData() {
     tableBody.innerHTML = '<tr><td colspan="100" class="loading">Đang tải dữ liệu từ SQL...</td></tr>';
     
     try {
-        // Fetch data from SQL API
+        // Fetch data from SQL API (now includes SCADA data)
         const queryParams = new URLSearchParams({
             stations: selectedStations.join(','),
             type: 'all',
@@ -397,7 +408,11 @@ async function loadStatsData() {
         }
         
         const result = await response.json();
-        console.log('API response:', result);
+        console.log('📥 API response received:', result);
+        console.log(`📊 API returned ${result.data?.length || 0} records`);
+        if (result.data && result.data.length > 0) {
+            console.log('   Sample record from API:', result.data[0]);
+        }
         
         if (!result.success) {
             throw new Error(result.error || 'Unknown error');
@@ -415,7 +430,7 @@ async function loadStatsData() {
         // Display data
         displayCurrentPage();
         
-        console.log(`Loaded ${filteredData.length} records from SQL`);
+        console.log(`Total loaded: ${filteredData.length} records`);
         
     } catch (error) {
         console.error('Error loading stats data:', error);
@@ -428,8 +443,12 @@ async function loadStatsData() {
  */
 function processStatsData(rawData, selectedStations, selectedParameter, interval) {
     if (!rawData || rawData.length === 0) {
+        console.log('⚠️ processStatsData: No raw data to process');
         return [];
     }
+    
+    console.log(`📊 processStatsData: Processing ${rawData.length} raw records`);
+    console.log('Sample record:', rawData[0]);
     
     // Normalize parameter names first (to handle case variations)
     const normalizedData = rawData.map(record => ({
@@ -444,20 +463,39 @@ function processStatsData(rawData, selectedStations, selectedParameter, interval
         .filter(name => name && name.trim()) // Remove empty names
         .filter(name => !name.toLowerCase().includes('nhiệt độ') && !name.toLowerCase().includes('nhiet do')); // Remove temperature
     
+    console.log('📋 All parameters found:', parameterNames);
+    console.log('🔍 Selected parameter:', selectedParameter);
+    
     // If a specific parameter is selected (not 'all'), filter to only that parameter
     if (selectedParameter !== 'all') {
-        parameterNames = parameterNames.filter(name => name === selectedParameter);
+        const normalizedSelectedParam = normalizeParameterName(selectedParameter);
+        console.log('🔍 Normalized selected param:', normalizedSelectedParam);
+        console.log('🔍 Parameter names before filter:', parameterNames);
+        
+        // Filter to only matching parameter (after normalization, all should match)
+        parameterNames = parameterNames.filter(name => name === normalizedSelectedParam);
+        
+        console.log('📋 Filtered parameters:', parameterNames);
     }
     
-    // Sort in specific order: Mực nước, Lưu lượng, Tổng lưu lượng
+    // Sort in specific order: Mực nước, Lưu lượng, Tổng lưu lượng, pH, TDS, Amoni, Nitrat
     parameterNames = sortParameterNames(parameterNames);
+    
+    console.log('✅ Final parameters to display:', parameterNames);
     
     // Store parameter names globally for header building
     currentParameterNames = parameterNames;
     
+    // Filter data to only include selected parameters
+    const filteredByParameter = normalizedData.filter(record => 
+        parameterNames.includes(record.parameter_name)
+    );
+    
+    console.log(`🔽 Filtered by parameter: ${filteredByParameter.length} records (from ${normalizedData.length})`);
+    
     // Apply sampling interval filter
     const intervalMinutes = parseInt(interval);
-    const filteredByInterval = applySamplingInterval(normalizedData, intervalMinutes);
+    const filteredByInterval = applySamplingInterval(filteredByParameter, intervalMinutes);
     
     // Group data by timestamp
     const groupedByTime = {};
@@ -513,7 +551,42 @@ function processStatsData(rawData, selectedStations, selectedParameter, interval
             return row;
         });
     
+    // Identify which columns have data
+    identifyVisibleColumns(data, selectedStations.length, parameterNames.length);
+    
     return data;
+}
+
+/**
+ * Identify which columns have at least one non-empty value
+ */
+function identifyVisibleColumns(data, stationCount, paramCount) {
+    if (data.length === 0) {
+        visibleColumnIndices = [];
+        return;
+    }
+    
+    const totalColumns = stationCount * paramCount;
+    const columnHasData = new Array(totalColumns).fill(false);
+    
+    // Check each column
+    data.forEach(row => {
+        row.values.forEach((value, index) => {
+            if (value !== null && value !== undefined && value !== '-' && value !== '') {
+                columnHasData[index] = true;
+            }
+        });
+    });
+    
+    // Build array of visible column indices
+    visibleColumnIndices = [];
+    columnHasData.forEach((hasData, index) => {
+        if (hasData) {
+            visibleColumnIndices.push(index);
+        }
+    });
+    
+    console.log(`📊 Visible columns: ${visibleColumnIndices.length}/${totalColumns}`);
 }
 
 /**
@@ -536,6 +609,21 @@ function normalizeParameterName(name) {
         return 'Tổng lưu lượng';
     }
     
+    // Water quality parameters - check exact matches and variations
+    // Normalize both 'pH' and 'Độ pH' to 'pH' for consistency
+    if (lower === 'ph' || lower === 'độ ph' || lower === 'do ph' || lower.includes('ph')) {
+        return 'pH';
+    }
+    if (lower === 'tds' || lower.includes('tds') || lower.includes('tổng chất rắn')) {
+        return 'TDS';
+    }
+    if (lower === 'amoni' || lower.includes('amoni') || lower === 'nh4+' || lower === 'nh4') {
+        return 'Amoni';
+    }
+    if (lower === 'nitrat' || lower.includes('nitrat') || lower === 'no3-' || lower === 'no3') {
+        return 'Nitrat';
+    }
+    
     // Return original with normalized case (first letter uppercase)
     return normalized.charAt(0).toUpperCase() + normalized.slice(1).toLowerCase();
 }
@@ -544,7 +632,7 @@ function normalizeParameterName(name) {
  * Sort parameter names in specific order
  */
 function sortParameterNames(names) {
-    const order = ['Mực nước', 'Lưu lượng', 'Tổng lưu lượng'];
+    const order = ['Mực nước', 'Lưu lượng', 'Tổng lưu lượng', 'pH', 'TDS', 'Amoni', 'Nitrat'];
     
     return names.sort((a, b) => {
         const indexA = order.indexOf(a);
@@ -652,28 +740,40 @@ function buildTableHeaderFromData(selectedStations, selectedParameter) {
     thTime.rowSpan = 2;
     headerStations.appendChild(thTime);
     
-    // Row 1: Station names (colspan = number of parameters)
-    selectedStations.forEach(stationId => {
+    // Row 1: Station names (colspan = number of visible parameters for that station)
+    selectedStations.forEach((stationId, stationIndex) => {
         const station = allStations.find(s => s.id === stationId);
         if (!station) return;
         
-        const thStation = document.createElement('th');
-        thStation.textContent = station.name;
-        thStation.colSpan = currentParameterNames.length;
-        thStation.className = 'station-header';
-        headerStations.appendChild(thStation);
+        // Count visible parameters for this station
+        const startCol = stationIndex * currentParameterNames.length;
+        const endCol = startCol + currentParameterNames.length;
+        const visibleParamsForStation = visibleColumnIndices.filter(idx => idx >= startCol && idx < endCol).length;
+        
+        if (visibleParamsForStation > 0) {
+            const thStation = document.createElement('th');
+            thStation.textContent = station.name;
+            thStation.colSpan = visibleParamsForStation;
+            thStation.className = 'station-header';
+            headerStations.appendChild(thStation);
+        }
     });
     
-    // Row 2: Parameter names (under each station)
-    selectedStations.forEach(stationId => {
+    // Row 2: Parameter names (only visible ones)
+    selectedStations.forEach((stationId, stationIndex) => {
         const station = allStations.find(s => s.id === stationId);
         if (!station) return;
         
-        currentParameterNames.forEach(paramName => {
-            const thParam = document.createElement('th');
-            thParam.textContent = paramName;
-            thParam.className = 'parameter-header';
-            headerParameters.appendChild(thParam);
+        currentParameterNames.forEach((paramName, paramIndex) => {
+            const columnIndex = stationIndex * currentParameterNames.length + paramIndex;
+            
+            // Only add header if this column has data
+            if (visibleColumnIndices.includes(columnIndex)) {
+                const thParam = document.createElement('th');
+                thParam.textContent = paramName;
+                thParam.className = 'parameter-header';
+                headerParameters.appendChild(thParam);
+            }
         });
     });
 }
@@ -734,11 +834,14 @@ function displayCurrentPage() {
         timeTd.textContent = row.time;
         tr.appendChild(timeTd);
         
-        // Data columns
-        row.values.forEach(value => {
-            const td = document.createElement('td');
-            td.textContent = value !== null && value !== undefined ? value : '-';
-            tr.appendChild(td);
+        // Data columns (only visible ones)
+        row.values.forEach((value, index) => {
+            // Only show columns that have data
+            if (visibleColumnIndices.includes(index)) {
+                const td = document.createElement('td');
+                td.textContent = value !== null && value !== undefined ? value : '-';
+                tr.appendChild(td);
+            }
         });
         
         tableBody.appendChild(tr);

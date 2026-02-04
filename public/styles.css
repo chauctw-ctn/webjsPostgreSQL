@@ -114,7 +114,6 @@ body.page-transitioning {
     padding: 8px 16px;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 6px;
-    margin-left: auto;
 }
 
 #current-time {
@@ -122,6 +121,38 @@ body.page-transitioning {
     font-size: 14px;
     font-weight: 500;
     white-space: nowrap;
+}
+
+/* Main Navigation */
+.main-nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.nav-link:active {
+    transform: translateY(0);
 }
 
 /* Auth Section */
@@ -284,18 +315,22 @@ body.page-transitioning {
     background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
     z-index: 100;
+    transform: translateX(-100%);
     transition: transform 0.3s ease;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     /* Hardware acceleration */
-    transform: translateZ(0);
     will-change: transform;
 }
 
 .sidebar.hidden {
     transform: translateX(-100%);
+}
+
+.sidebar.active {
+    transform: translateX(0);
 }
 
 /* Sidebar Overlay for Mobile */
@@ -313,7 +348,8 @@ body.page-transitioning {
     opacity: 0;
 }
 
-.sidebar-overlay.show {
+.sidebar-overlay.show,
+.sidebar-overlay.active {
     display: block;
     opacity: 1;
 }
@@ -848,7 +884,7 @@ body.page-transitioning {
     height: calc(100vh - 56px);
     min-height: 400px;
     margin-top: 56px;
-    transition: margin-left 0.3s ease;
+    transition: margin-left 0.3s ease, width 0.3s ease;
     overflow: hidden;
     position: relative;
     z-index: 1;

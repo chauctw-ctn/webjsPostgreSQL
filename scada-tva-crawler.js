@@ -1,7 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
-const { formatChannelData, groupByStation } = require("./tva-channel-mapping");
+const { formatChannelData, groupByStation, TVA_CHANNEL_MAPPING } = require("./tva-channel-mapping");
 
 // Thông tin hệ thống SCADA
 const SCADA_URL = "http://14.161.36.253:86";
@@ -157,12 +157,50 @@ async function crawlScadaTVA() {
         
         console.log(`📊 [SCADA] Tìm thấy ${views.length} views:`);
         views.forEach(v => console.log(`   - ${v.name} (ID: ${v.id})`));
+
+        // Warm up the Rapid SCADA view cache before calling Client API.
+        // If the view was not opened in the current session, the API can return:
+        // "The view is not found in the cache".
+        const warmUpViewCache = async (viewID) => {
+            try {
+                const url = `${SCADA_URL}/Scada/View.aspx?viewID=${viewID}`;
+                console.log(`🧯 [SCADA] Warm-up view cache: ${url}`);
+                await client.get(url, {
+                    headers: {
+                        'Cookie': sessionCookie,
+                        'Referer': dashboardUrl || `${SCADA_URL}/Scada/View.aspx`,
+                    },
+                    timeout: 15000,
+                });
+                console.log(`✅ [SCADA] View cache warmed (viewID=${viewID})`);
+            } catch (e) {
+                console.log(`⚠️ [SCADA] Warm-up failed (viewID=${viewID}): ${e.response?.status || e.message}`);
+            }
+        };
         
         // ⚡ PHƯƠNG ÁN 1: Lấy dữ liệu realtime từ API JSON (NHANH NHẤT - ƯU TIÊN)
         try {
             console.log("\n🚀 [SCADA] Đang lấy dữ liệu từ API JSON endpoint (ưu tiên)...");
+
+            // Ensure the view is cached for this session
+            await warmUpViewCache(16);
             
-            const realtimeData = await getRealtimeDataFromAPI(sessionCookie, 16);
+            let realtimeData = [];
+
+            // Attempt A: view-based (may fail if view cache isn't initialized server-side)
+            try {
+                realtimeData = await getRealtimeDataFromAPI(sessionCookie, 16);
+            } catch (viewErr) {
+                console.log("⚠️ [SCADA API] View-based API failed, trying channel-based API...");
+                console.log("   Lỗi:", viewErr.message);
+
+                const channelNums = Object.keys(TVA_CHANNEL_MAPPING)
+                    .map(k => parseInt(k, 10))
+                    .filter(n => Number.isFinite(n))
+                    .sort((a, b) => a - b);
+
+                realtimeData = await getRealtimeDataFromAPIByChannels(sessionCookie, channelNums);
+            }
             
             if (realtimeData && realtimeData.length > 0) {
                 console.log(`✅ [SCADA API] Lấy được ${realtimeData.length} kênh dữ liệu realtime`);
@@ -262,6 +300,14 @@ async function crawlScadaTVA() {
                                     });
                                     
                                     if (rawData.some(d => d.length > 0)) {
+                                        // Extract channel number from the first cell text (e.g., "In channel: [2907]")
+                                        const firstCell = rawData[0] || '';
+                                        const channelMatch = firstCell.match(/\[(\d+)\]/);
+                                        const channelNumber = channelMatch ? parseInt(channelMatch[1], 10) : null;
+                                        
+                                        // Get current value from the "Current" column if exists
+                                        const currentValue = rowData['Current'] || rowData['Giá trị'] || '';
+                                        
                                         stations.push({
                                             id: rawData[0] || `${view.id}_${k}`,
                                             name: rawData[1] || rawData[0] || 'Unknown',
@@ -269,6 +315,10 @@ async function crawlScadaTVA() {
                                             viewId: view.id,
                                             data: rowData,
                                             rawData: rawData,
+                                            CnlNum: channelNumber, // Add channel number for mapping
+                                            Val: currentValue ? parseFloat(currentValue) : null,
+                                            TextWithUnit: currentValue,
+                                            Stat: currentValue && currentValue !== '' ? 1 : 0,
                                         });
                                     }
                                 }
@@ -325,6 +375,56 @@ async function crawlScadaTVA() {
 }
 
 /**
+ * Lấy dữ liệu realtime từ API JSON theo danh sách channel numbers,
+ * không phụ thuộc vào view cache.
+ * @param {string} sessionCookie
+ * @param {number[]} channelNums
+ * @returns {Promise<Object[]>}
+ */
+async function getRealtimeDataFromAPIByChannels(sessionCookie, channelNums) {
+    if (!Array.isArray(channelNums) || channelNums.length === 0) return [];
+
+    console.log(`\n🔌 [SCADA API] Đang lấy dữ liệu realtime theo channelNums (${channelNums.length} kênh)...`);
+
+    const client = axios.create({
+        timeout: 15000,
+        headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+    });
+
+    const timestamp = Date.now();
+    const apiUrl = `${SCADA_URL}/Scada/ClientApiSvc.svc/GetCurCnlDataExt`;
+    const params = {
+        // Rapid SCADA expects JSON arrays in query params
+        cnlNums: JSON.stringify(channelNums),
+        viewIDs: '[]',
+        _: timestamp,
+    };
+
+    const response = await client.get(apiUrl, {
+        params,
+        headers: {
+            'Cookie': sessionCookie,
+            'Referer': `${SCADA_URL}/Scada/View.aspx`,
+        },
+    });
+
+    if (response.data && response.data.d) {
+        const data = JSON.parse(response.data.d);
+        if (data.Success) {
+            console.log(`✅ [SCADA API] Channel-based: ${data.Data.length} kênh`);
+            return data.Data;
+        }
+        throw new Error(`API Error: ${data.ErrorMessage}`);
+    }
+
+    throw new Error('Invalid API response format');
+}
+
+/**
  * Lấy dữ liệu realtime từ API JSON endpoint của Rapid SCADA
  * @param {string} sessionCookie - Session cookie sau khi login
  * @param {number} viewID - View ID (16 = TRANG CHỦ)
@@ -346,8 +446,9 @@ async function getRealtimeDataFromAPI(sessionCookie, viewID = 16) {
         const timestamp = Date.now();
         const apiUrl = `${SCADA_URL}/Scada/ClientApiSvc.svc/GetCurCnlDataExt`;
         const params = {
-            cnlNums: ' ',
-            viewIDs: ' ',
+            // Use empty strings (not space) to avoid breaking server-side parsing
+            cnlNums: '',
+            viewIDs: '',
             viewID: viewID,
             _: timestamp
         };

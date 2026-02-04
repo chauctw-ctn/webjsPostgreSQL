@@ -168,10 +168,15 @@ body {
     transition: transform 0.3s ease;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    transform: translateX(0);
 }
 
 .sidebar.hidden {
     transform: translateX(-100%);
+}
+
+.sidebar.active {
+    transform: translateX(0);
 }
 
 /* Sidebar Overlay for Mobile */
@@ -350,6 +355,14 @@ main {
 }
 
 main.sidebar-hidden {
+    margin-left: 0;
+}
+
+main.with-sidebar {
+    margin-left: 300px;
+}
+
+main:not(.with-sidebar) {
     margin-left: 0;
 }
 
