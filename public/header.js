@@ -5,7 +5,7 @@ function createHeader(pageTitle = '') {
         <div class="header-content">
             <button class="menu-btn" id="menu-btn">☰</button>
             <div class="logo-section">
-                <img src="http://14.225.252.85/assets/images/logo.png" alt="Logo" class="header-logo">
+                <img src="logo.png" alt="Logo" class="header-logo">
                 <div class="company-info">
                     <h1 class="company-name">CÔNG TY CỔ PHẦN CẤP NƯỚC CÀ MAU</h1>
                     <p class="company-address">204 Quang Trung, P. Tân Thành, Cà Mau</p>

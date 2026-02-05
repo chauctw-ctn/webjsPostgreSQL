@@ -418,6 +418,27 @@ async function loadStatsData() {
             throw new Error(result.error || 'Unknown error');
         }
         
+        // Check if no data returned
+        if (!result.data || result.data.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="100" class="no-data">
+                        <div style="padding: 40px; text-align: center;">
+                            <h3 style="color: #666; margin-bottom: 10px;">📊 Không tìm thấy dữ liệu</h3>
+                            <p style="color: #999;">Không có dữ liệu cho khoảng thời gian và trạm đã chọn.</p>
+                            <p style="color: #999; font-size: 13px; margin-top: 10px;">
+                                Lưu ý: Dữ liệu chất lượng nước được cập nhật mỗi 5 phút.<br>
+                                Vui lòng chọn khoảng thời gian khác hoặc đợi hệ thống cập nhật dữ liệu.
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            // Build empty table header
+            buildTableHeaderFromData(selectedStations, selectedParameter);
+            return;
+        }
+        
         // Process and format the data
         filteredData = processStatsData(result.data, selectedStations, selectedParameter, interval);
         
@@ -432,9 +453,38 @@ async function loadStatsData() {
         
         console.log(`Total loaded: ${filteredData.length} records`);
         
+        // Show message if processed data is empty but raw data had records
+        if (filteredData.length === 0 && result.data.length > 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="100" class="no-data">
+                        <div style="padding: 40px; text-align: center;">
+                            <h3 style="color: #666; margin-bottom: 10px;">🔍 Không có dữ liệu phù hợp</h3>
+                            <p style="color: #999;">Dữ liệu đã được lọc theo khoảng lấy mẫu bạn chọn.</p>
+                            <p style="color: #999; font-size: 13px; margin-top: 10px;">
+                                Thử chọn khoảng lấy mẫu nhỏ hơn hoặc mở rộng khoảng thời gian.
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+        
     } catch (error) {
         console.error('Error loading stats data:', error);
-        tableBody.innerHTML = `<tr><td colspan="100" class="no-data">Lỗi khi tải dữ liệu: ${error.message}</td></tr>`;
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="100" class="no-data">
+                    <div style="padding: 40px; text-align: center;">
+                        <h3 style="color: #d32f2f; margin-bottom: 10px;">❌ Lỗi khi tải dữ liệu</h3>
+                        <p style="color: #666;">${error.message}</p>
+                        <p style="color: #999; font-size: 13px; margin-top: 10px;">
+                            Vui lòng thử lại hoặc liên hệ quản trị viên nếu lỗi vẫn tiếp diễn.
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        `;
     }
 }
 

@@ -283,7 +283,7 @@ body.transitioning .login-box {
     }
     
     .login-box {
-        padding: 32px;
+        padding: 32px 28px;
     }
     
     h1 {
@@ -293,31 +293,36 @@ body.transitioning .login-box {
     h2 {
         font-size: 15px;
     }
+    
+    .logo img {
+        max-width: 110px;
+    }
 }
 
 /* Mobile Specific */
 @media (max-width: 480px) {
     body {
         padding: 10px;
+        align-items: flex-start;
+        padding-top: 40px;
     }
     
     .login-box {
-        padding: 24px 20px;
-        border-radius: 12px;
+        padding: 28px 24px;
+        border-radius: 16px;
     }
     
     .logo {
         margin-bottom: 16px;
     }
     
-    .logo img,
-    .logo svg {
+    .logo img {
         max-width: 100px;
         height: auto;
     }
     
     h1 {
-        font-size: 22px;
+        font-size: 24px;
         margin-bottom: 6px;
     }
     
@@ -327,7 +332,7 @@ body.transitioning .login-box {
     }
     
     .form-group {
-        margin-bottom: 16px;
+        margin-bottom: 18px;
     }
     
     .form-group label {
@@ -336,21 +341,70 @@ body.transitioning .login-box {
     }
     
     .form-group input {
-        padding: 11px 14px;
-        font-size: 14px;
+        padding: 12px 14px;
+        font-size: 16px; /* Prevent zoom on iOS */
+        min-height: 48px;
     }
     
     .login-btn {
-        padding: 12px;
-        font-size: 14px;
+        padding: 14px;
+        font-size: 16px;
+        min-height: 50px;
     }
     
     .error-message {
-        font-size: 12px;
+        font-size: 13px;
         padding: 10px 12px;
     }
     
     .footer p {
-        font-size: 11px;
+        font-size: 12px;
     }
 }
+
+/* Landscape mode for phones */
+@media (max-width: 812px) and (orientation: landscape) {
+    body {
+        padding: 10px;
+        padding-top: 10px;
+        align-items: center;
+    }
+    
+    .login-box {
+        padding: 20px 24px;
+        max-width: 450px;
+    }
+    
+    .logo {
+        margin-bottom: 12px;
+    }
+    
+    .logo img {
+        max-width: 80px;
+    }
+    
+    h1 {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+    
+    h2 {
+        font-size: 13px;
+        margin-bottom: 16px;
+    }
+    
+    .form-group {
+        margin-bottom: 14px;
+    }
+    
+    .footer {
+        margin-top: 16px;
+    }
+}
+
+/* Safe area for notched devices */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+        padding-bottom: max(10px, env(safe-area-inset-bottom));

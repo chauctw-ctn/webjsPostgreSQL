@@ -1,0 +1,27 @@
+{
+  "name": "CAWACO - Hệ thống Giám sát Nước",
+  "short_name": "CAWACO",
+  "description": "Hệ thống Quan trắc và Giám sát Chất lượng Nước - Công ty Cổ phần Cấp nước Cà Mau",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0066cc",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "lang": "vi",
+  "dir": "ltr"
+}

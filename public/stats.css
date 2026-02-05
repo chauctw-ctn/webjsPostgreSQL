@@ -1269,4 +1269,63 @@ button {
 .table-container,
 .modal-content {
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
+
+/* Landscape orientation for mobile */
+@media (max-width: 812px) and (orientation: landscape) {
+    .container {
+        height: calc(100vh - 56px);
+    }
+    
+    main {
+        margin-top: 56px;
+    }
+    
+    .filters-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 12px;
+    }
+    
+    .table-container {
+        max-height: calc(100vh - 250px);
+    }
+}
+
+/* Safe area for notched devices */
+@supports (padding: max(0px)) {
+    main {
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+    }
+}
+
+/* Improve touch feedback */
+@media (hover: none) and (pointer: coarse) {
+    .primary-btn:active,
+    .menu-item:active,
+    .checkbox-item:active,
+    .user-menu-btn:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+}
+
+/* Table horizontal scroll indicator */
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;

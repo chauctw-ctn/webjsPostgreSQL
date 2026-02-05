@@ -823,6 +823,12 @@ body {
 @media (max-width: 768px) {
     .scada-main {
         padding: 15px;
+        margin-top: 60px;
+    }
+    
+    .scada-main.with-sidebar {
+        margin-left: 0;
+        width: 100%;
     }
     
     .page-title {
@@ -832,6 +838,24 @@ body {
 
     .page-subtitle {
         font-size: 13px;
+    }
+    
+    .page-header-section {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .page-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+    
+    .refresh-btn {
+        flex: 1;
+        justify-content: center;
+        min-height: 44px;
+        font-size: 15px;
     }
     
     .station-card {
@@ -846,12 +870,103 @@ body {
         font-size: 18px;
     }
 
+    .scada-group-grid { 
+        gap: 12px; 
+    }
 
-    .scada-group-grid { gap: 8px; }
-
-    .station-panel__header { padding: 10px 10px; }
-    .station-panel__name { font-size: 13px; }
-    .station-panel__metrics { padding: 10px; gap: 8px; }
-    .hmi-block { padding: 9px 10px; min-height: 64px; }
-    .hmi-value { font-size: 17px; }
+    .station-panel__header { 
+        padding: 12px 14px;
+    }
+    
+    .station-panel__name { 
+        font-size: 14px;
+        line-height: 1.4;
+    }
+    
+    .station-panel__metrics { 
+        padding: 12px; 
+        gap: 10px;
+        grid-template-columns: 1fr;
+    }
+    
+    .hmi-block { 
+        padding: 12px 14px; 
+        min-height: 70px;
+    }
+    
+    .hmi-value { 
+        font-size: 20px;
+    }
+    
+    .hmi-label {
+        font-size: 13px;
+    }
+    
+    .last-update-info {
+        font-size: 12px;
+        padding: 10px 12px;
+    }
 }
+
+/* Mobile specific optimizations */
+@media (max-width: 480px) {
+    .scada-main {
+        padding: 10px;
+        margin-top: 56px;
+    }
+    
+    .page-title {
+        font-size: 18px;
+        padding: 12px 14px;
+    }
+    
+    .page-subtitle {
+        font-size: 12px;
+    }
+    
+    .refresh-btn {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    .station-panel__header {
+        padding: 10px 12px;
+    }
+    
+    .station-panel__name {
+        font-size: 13px;
+    }
+    
+    .hmi-block {
+        padding: 10px 12px;
+        min-height: 65px;
+    }
+    
+    .hmi-value {
+        font-size: 18px;
+    }
+    
+    .hmi-label {
+        font-size: 12px;
+    }
+    
+    .hmi-unit {
+        font-size: 11px;
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 812px) and (orientation: landscape) {
+    .scada-main {
+        padding: 12px;
+    }
+    
+    .station-panel__metrics {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .hmi-block {
+        min-height: 60px;
+        padding: 8px 10px;
+    }
