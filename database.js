@@ -1,6 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
+// Config giới hạn số lượng records (để tránh hết dung lượng)
+const MAX_RECORDS = {
+    TVA: 100000,    // Giới hạn 100k records cho TVA
+    MQTT: 100000,   // Giới hạn 100k records cho MQTT
+    SCADA: 100000   // Giới hạn 100k records cho SCADA
+};
+
 // Tạo hoặc mở database
 const dbPath = path.join(__dirname, 'water_monitoring.db');
 let db;
@@ -115,6 +122,48 @@ function initDatabase() {
 }
 
 /**
+ * Xóa records cũ nhất để giữ trong giới hạn
+ */
+function cleanupOldRecords(tableName, maxRecords) {
+    return new Promise((resolve, reject) => {
+        // Đếm số records hiện tại
+        db.get(`SELECT COUNT(*) as count FROM ${tableName}`, [], (err, row) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            
+            const currentCount = row.count;
+            if (currentCount <= maxRecords) {
+                resolve(0); // Không cần xóa
+                return;
+            }
+            
+            // Xóa records cũ nhất (giữ lại maxRecords records mới nhất)
+            const deleteCount = currentCount - maxRecords;
+            const deleteQuery = `
+                DELETE FROM ${tableName}
+                WHERE id IN (
+                    SELECT id FROM ${tableName}
+                    ORDER BY timestamp ASC
+                    LIMIT ${deleteCount}
+                )
+            `;
+            
+            db.run(deleteQuery, [], function(err) {
+                if (err) {
+                    console.error(`❌ Lỗi xóa dữ liệu cũ từ ${tableName}:`, err.message);
+                    reject(err);
+                } else {
+                    console.log(`🗑️ Đã xóa ${this.changes} records cũ từ ${tableName} (giữ ${maxRecords} records mới nhất)`);
+                    resolve(this.changes);
+                }
+            });
+        });
+    });
+}
+
+/**
  * Lưu dữ liệu TVA vào database
  */
 function saveTVAData(stations) {
@@ -163,12 +212,18 @@ function saveTVAData(stations) {
                 }
             });
 
-            stmt.finalize((err) => {
+            stmt.finalize(async (err) => {
                 if (err) {
                     reject(err);
                 } else {
                     if (errors.length > 0) {
                         console.warn(`⚠️ Có ${errors.length} lỗi khi lưu dữ liệu TVA`);
+                    }
+                    // Cleanup old records nếu vượt giới hạn
+                    try {
+                        await cleanupOldRecords('tva_data', MAX_RECORDS.TVA);
+                    } catch (cleanupErr) {
+                        console.error('⚠️ Lỗi cleanup TVA data:', cleanupErr.message);
                     }
                     resolve(savedCount);
                 }
@@ -232,7 +287,7 @@ function saveMQTTData(stations) {
                 }
             });
 
-            stmt.finalize((err) => {
+            stmt.finalize(async (err) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -240,6 +295,12 @@ function saveMQTTData(stations) {
                         console.warn(`⚠️ Có ${errors.length} lỗi khi lưu dữ liệu MQTT`);
                     }
                     console.log(`✅ Successfully saved ${savedCount} MQTT records`);
+                    // Cleanup old records nếu vượt giới hạn
+                    try {
+                        await cleanupOldRecords('mqtt_data', MAX_RECORDS.MQTT);
+                    } catch (cleanupErr) {
+                        console.error('⚠️ Lỗi cleanup MQTT data:', cleanupErr.message);
+                    }
                     resolve(savedCount);
                 }
             });
@@ -306,7 +367,7 @@ function saveSCADAData(stationsGrouped) {
                 }
             });
 
-            stmt.finalize((err) => {
+            stmt.finalize(async (err) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -314,6 +375,12 @@ function saveSCADAData(stationsGrouped) {
                         console.warn(`⚠️ Có ${errors.length} lỗi khi lưu dữ liệu SCADA`);
                     }
                     console.log(`✅ Đã lưu ${savedCount} bản ghi SCADA vào database`);
+                    // Cleanup old records nếu vượt giới hạn
+                    try {
+                        await cleanupOldRecords('scada_data', MAX_RECORDS.SCADA);
+                    } catch (cleanupErr) {
+                        console.error('⚠️ Lỗi cleanup SCADA data:', cleanupErr.message);
+                    }
                     resolve(savedCount);
                 }
             });
@@ -1064,7 +1131,9 @@ module.exports = {
     getStations,
     saveStationInfo,
     cleanOldData,
+    cleanupOldRecords,
     closeDatabase,
     checkStationsValueChanges,
-    getLatestStationsData
+    getLatestStationsData,
+    MAX_RECORDS
 };
