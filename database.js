@@ -33,17 +33,21 @@ const pool = new Pool(
 );
 
 // Helper function: Tạo timestamp theo giờ VN (GMT+7)
+// Tính toán thủ công để đảm bảo hoạt động đúng trên mọi môi trường (local và Render)
 function getVietnamTimestamp() {
-    return new Date().toLocaleString('sv-SE', {
-        timeZone: 'Asia/Ho_Chi_Minh',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    }).replace(' ', 'T');
+    const now = new Date();
+    // Lấy thời gian UTC và cộng 7 giờ (GMT+7)
+    const vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    
+    // Format: YYYY-MM-DD HH:mm:ss
+    const year = vietnamTime.getUTCFullYear();
+    const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
+    const hours = String(vietnamTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(vietnamTime.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(vietnamTime.getUTCSeconds()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 // Test connection
