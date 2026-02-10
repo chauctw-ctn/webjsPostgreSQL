@@ -6,10 +6,8 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     healthCheckPath: /api/stations
-    disk:
-      name: water-monitoring-data
-      mountPath: /opt/render/project/src
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
+      - key: DATABASE_URL
+        sync: false  # Set this in Render Dashboard for security

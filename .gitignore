@@ -14,6 +14,10 @@ yarn-error.log*
 # Database files
 monitoring.db
 monitoring.db-journal
+water_monitoring.db
+water_monitoring.db-journal
+*.db
+*.db-journal
 
 # OS files
 .DS_Store
