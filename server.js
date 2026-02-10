@@ -906,7 +906,13 @@ app.get('/api/scada/stations', async (req, res) => {
             if (fs.existsSync(dataPath)) {
                 const scadaData = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
                 if (scadaData.stationsGrouped) {
-                    const savedCount = await saveSCADAData(scadaData.stationsGrouped);
+                    // Thêm timestamp từ file JSON vào mỗi station
+                    const stationsWithTimestamp = Object.values(scadaData.stationsGrouped).map(station => ({
+                        ...station,
+                        updateTime: scadaData.timestamp // Timestamp chung của toàn file
+                    }));
+                    
+                    const savedCount = await saveSCADAData(stationsWithTimestamp);
                     console.log(`💾 [SQL] Đã lưu ${savedCount} bản ghi SCADA vào database`);
                 }
             }
@@ -973,7 +979,13 @@ app.post('/api/scada/update', verifyToken, async (req, res) => {
             if (fs.existsSync(dataPath)) {
                 const scadaData = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
                 if (scadaData.stationsGrouped) {
-                    const savedCount = await saveSCADAData(scadaData.stationsGrouped);
+                    // Thêm timestamp từ file JSON vào mỗi station
+                    const stationsWithTimestamp = Object.values(scadaData.stationsGrouped).map(station => ({
+                        ...station,
+                        updateTime: scadaData.timestamp
+                    }));
+                    
+                    const savedCount = await saveSCADAData(stationsWithTimestamp);
                     console.log(`💾 [SQL] Đã lưu ${savedCount} bản ghi SCADA vào database`);
                 }
             }
@@ -1103,7 +1115,13 @@ app.listen(PORT, async () => {
         if (fs.existsSync(scadaPath)) {
             const scadaData = JSON.parse(fs.readFileSync(scadaPath, 'utf-8'));
             if (scadaData.stationsGrouped) {
-                const savedCount = await saveSCADAData(scadaData.stationsGrouped);
+                // Thêm timestamp từ file JSON vào mỗi station
+                const stationsWithTimestamp = Object.values(scadaData.stationsGrouped).map(station => ({
+                    ...station,
+                    updateTime: scadaData.timestamp // Timestamp chung của toàn file
+                }));
+                
+                const savedCount = await saveSCADAData(stationsWithTimestamp);
                 console.log(`✅ Đã lưu ${savedCount} bản ghi SCADA vào database\n`);
             }
         }
@@ -1121,7 +1139,13 @@ app.listen(PORT, async () => {
             if (fs.existsSync(scadaPath)) {
                 const scadaData = JSON.parse(fs.readFileSync(scadaPath, 'utf-8'));
                 if (scadaData.stationsGrouped) {
-                    const savedCount = await saveSCADAData(scadaData.stationsGrouped);
+                    // Thêm timestamp vào mỗi station
+                    const stationsWithTimestamp = Object.values(scadaData.stationsGrouped).map(station => ({
+                        ...station,
+                        updateTime: scadaData.timestamp
+                    }));
+                    
+                    const savedCount = await saveSCADAData(stationsWithTimestamp);
                     console.log(`✅ [SCADA] Đã lưu ${savedCount} bản ghi vào database`);
                 }
             }

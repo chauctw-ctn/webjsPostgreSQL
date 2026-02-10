@@ -38,7 +38,9 @@ pool.on('connect', (client) => {
 });
 
 // Helper function: Tạo timestamp theo giờ VN (GMT+7)
-// Trả về timestamp đã chuyển sang giờ VN
+// CHỈ dùng khi dữ liệu KHÔNG có timestamp riêng
+// Nếu dữ liệu đã có updateTime (ISO string với timezone), 
+// PostgreSQL sẽ TỰ ĐỘNG parse và convert sang GMT+7
 function getVietnamTimestamp() {
     const now = new Date();
     // Chuyển sang giờ VN (GMT+7)
@@ -53,6 +55,43 @@ function getVietnamTimestamp() {
     const seconds = String(vietnamTime.getSeconds()).padStart(2, '0');
     
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+// Helper function: Convert bất kỳ timestamp nào sang giờ VN
+// Hỗ trợ: ISO string, Date object, hoặc timestamp string
+// Nếu timestamp đã ở GMT+7, giữ nguyên
+// Nếu timestamp có timezone khác (UTC, etc), convert sang GMT+7
+function convertToVietnamTimestamp(timestamp) {
+    if (!timestamp) {
+        return getVietnamTimestamp();
+    }
+    
+    try {
+        // Parse timestamp (hỗ trợ ISO string, Date, hay string)
+        const date = new Date(timestamp);
+        
+        // Nếu không parse được, dùng current time
+        if (isNaN(date.getTime())) {
+            console.warn(`⚠️ Không parse được timestamp: ${timestamp}, dùng current time`);
+            return getVietnamTimestamp();
+        }
+        
+        // Convert sang giờ VN
+        const vietnamTime = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+        
+        // Format: YYYY-MM-DD HH:mm:ss
+        const year = vietnamTime.getFullYear();
+        const month = String(vietnamTime.getMonth() + 1).padStart(2, '0');
+        const day = String(vietnamTime.getDate()).padStart(2, '0');
+        const hours = String(vietnamTime.getHours()).padStart(2, '0');
+        const minutes = String(vietnamTime.getMinutes()).padStart(2, '0');
+        const seconds = String(vietnamTime.getSeconds()).padStart(2, '0');
+        
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    } catch (err) {
+        console.warn(`⚠️ Lỗi convert timestamp: ${err.message}, dùng current time`);
+        return getVietnamTimestamp();
+    }
 }
 
 // Test connection
@@ -202,7 +241,8 @@ async function saveTVAData(stations) {
     }
 
     const client = await pool.connect();
-    const timestamp = getVietnamTimestamp();
+    // Chỉ tạo timestamp mới nếu dữ liệu không có timestamp riêng
+    const fallbackTimestamp = getVietnamTimestamp();
     let savedCount = 0;
     let errors = [];
 
@@ -214,6 +254,10 @@ async function saveTVAData(stations) {
             
             // Lưu thông tin trạm
             await saveStationInfo(stationId, station.station, 'TVA', null, null);
+
+            // Sử dụng timestamp từ dữ liệu nếu có, convert sang GMT+7
+            // Nếu không có, dùng current timestamp
+            const timestamp = convertToVietnamTimestamp(station.updateTime);
 
             // Lưu từng thông số
             if (station.data && Array.isArray(station.data)) {
@@ -229,7 +273,7 @@ async function saveTVAData(stations) {
                                 param.value,
                                 param.unit,
                                 timestamp,
-                                station.updateTime || timestamp
+                                timestamp
                             ]
                         );
                         savedCount++;
@@ -273,7 +317,8 @@ async function saveMQTTData(stations) {
     }
 
     const client = await pool.connect();
-    const timestamp = getVietnamTimestamp();
+    // Chỉ tạo timestamp mới nếu dữ liệu không có updateTime
+    const fallbackTimestamp = getVietnamTimestamp();
     let savedCount = 0;
     let errors = [];
 
@@ -290,6 +335,10 @@ async function saveMQTTData(stations) {
             // Lưu thông tin trạm
             await saveStationInfo(stationId, station.station, 'MQTT', station.lat, station.lng);
 
+            // Sử dụng updateTime từ dữ liệu nếu có, convert sang GMT+7
+            // (PostgreSQL TIMESTAMP không tự động convert timezone)
+            const timestamp = convertToVietnamTimestamp(station.updateTime);
+
             // Lưu từng thông số
             if (station.data && Array.isArray(station.data)) {
                 for (const param of station.data) {
@@ -305,7 +354,7 @@ async function saveMQTTData(stations) {
                                 param.value,
                                 param.unit,
                                 timestamp,
-                                station.updateTime || timestamp
+                                timestamp
                             ]
                         );
                         savedCount++;
@@ -349,7 +398,8 @@ async function saveSCADAData(stationsGrouped) {
     }
 
     const client = await pool.connect();
-    const timestamp = getVietnamTimestamp();
+    // Chỉ tạo timestamp mới nếu station không có updateTime
+    const fallbackTimestamp = getVietnamTimestamp();
     let savedCount = 0;
     let errors = [];
 
@@ -361,6 +411,9 @@ async function saveSCADAData(stationsGrouped) {
             
             // Lưu thông tin trạm (không có lat/lng cho SCADA)
             await saveStationInfo(stationId, station.stationName || station.station, 'SCADA', null, null);
+
+            // Sử dụng updateTime từ station nếu có, convert sang GMT+7
+            const timestamp = convertToVietnamTimestamp(station.updateTime);
 
             // Lưu từng thông số
             if (station.parameters && Array.isArray(station.parameters)) {
