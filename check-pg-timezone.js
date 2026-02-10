@@ -8,6 +8,11 @@ const pool = new Pool({
     }
 });
 
+// Set timezone to Vietnam (GMT+7) for all connections
+pool.on('connect', (client) => {
+    client.query("SET timezone = 'Asia/Ho_Chi_Minh'");
+});
+
 async function checkTimezone() {
     const client = await pool.connect();
     
@@ -35,6 +40,7 @@ async function checkTimezone() {
         const testTimestamp = new Date().toISOString();
         console.log('  Insert value:', testTimestamp);
         
+        await client.query('DROP TABLE IF EXISTS test_time');
         await client.query('CREATE TEMP TABLE test_time (ts TIMESTAMPTZ)');
         await client.query('INSERT INTO test_time (ts) VALUES ($1)', [testTimestamp]);
         const selectResult = await client.query('SELECT ts FROM test_time');

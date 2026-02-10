@@ -32,20 +32,25 @@ const pool = new Pool(
           }
 );
 
+// Set timezone to Vietnam (GMT+7) for all connections
+pool.on('connect', (client) => {
+    client.query("SET timezone = 'Asia/Ho_Chi_Minh'");
+});
+
 // Helper function: Tạo timestamp theo giờ VN (GMT+7)
-// Tính toán thủ công để đảm bảo hoạt động đúng trên mọi môi trường (local và Render)
+// Trả về timestamp đã chuyển sang giờ VN
 function getVietnamTimestamp() {
     const now = new Date();
-    // Lấy thời gian UTC và cộng 7 giờ (GMT+7)
-    const vietnamTime = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+    // Chuyển sang giờ VN (GMT+7)
+    const vietnamTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
     
     // Format: YYYY-MM-DD HH:mm:ss
-    const year = vietnamTime.getUTCFullYear();
-    const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
-    const hours = String(vietnamTime.getUTCHours()).padStart(2, '0');
-    const minutes = String(vietnamTime.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(vietnamTime.getUTCSeconds()).padStart(2, '0');
+    const year = vietnamTime.getFullYear();
+    const month = String(vietnamTime.getMonth() + 1).padStart(2, '0');
+    const day = String(vietnamTime.getDate()).padStart(2, '0');
+    const hours = String(vietnamTime.getHours()).padStart(2, '0');
+    const minutes = String(vietnamTime.getMinutes()).padStart(2, '0');
+    const seconds = String(vietnamTime.getSeconds()).padStart(2, '0');
     
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
