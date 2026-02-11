@@ -43,16 +43,16 @@ pool.on('connect', (client) => {
 // PostgreSQL sẽ TỰ ĐỘNG parse và convert sang GMT+7
 function getVietnamTimestamp() {
     const now = new Date();
-    // Chuyển sang giờ VN (GMT+7)
-    const vietnamTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+    // Lấy UTC time và cộng thêm 7 giờ (GMT+7)
+    const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
     
-    // Format: YYYY-MM-DD HH:mm:ss
-    const year = vietnamTime.getFullYear();
-    const month = String(vietnamTime.getMonth() + 1).padStart(2, '0');
-    const day = String(vietnamTime.getDate()).padStart(2, '0');
-    const hours = String(vietnamTime.getHours()).padStart(2, '0');
-    const minutes = String(vietnamTime.getMinutes()).padStart(2, '0');
-    const seconds = String(vietnamTime.getSeconds()).padStart(2, '0');
+    // Format: YYYY-MM-DD HH:mm:ss (sử dụng UTC methods vì đã cộng offset)
+    const year = vietnamTime.getUTCFullYear();
+    const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
+    const hours = String(vietnamTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(vietnamTime.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(vietnamTime.getUTCSeconds()).padStart(2, '0');
     
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
@@ -76,16 +76,16 @@ function convertToVietnamTimestamp(timestamp) {
             return getVietnamTimestamp();
         }
         
-        // Convert sang giờ VN
-        const vietnamTime = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+        // Lấy UTC time và cộng thêm 7 giờ (GMT+7)
+        const vietnamTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
         
-        // Format: YYYY-MM-DD HH:mm:ss
-        const year = vietnamTime.getFullYear();
-        const month = String(vietnamTime.getMonth() + 1).padStart(2, '0');
-        const day = String(vietnamTime.getDate()).padStart(2, '0');
-        const hours = String(vietnamTime.getHours()).padStart(2, '0');
-        const minutes = String(vietnamTime.getMinutes()).padStart(2, '0');
-        const seconds = String(vietnamTime.getSeconds()).padStart(2, '0');
+        // Format: YYYY-MM-DD HH:mm:ss (sử dụng UTC methods vì đã cộng offset)
+        const year = vietnamTime.getUTCFullYear();
+        const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
+        const hours = String(vietnamTime.getUTCHours()).padStart(2, '0');
+        const minutes = String(vietnamTime.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(vietnamTime.getUTCSeconds()).padStart(2, '0');
         
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     } catch (err) {
