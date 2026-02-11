@@ -37,30 +37,15 @@ pool.on('connect', (client) => {
     client.query("SET timezone = 'Asia/Ho_Chi_Minh'");
 });
 
-// Helper function: Tạo timestamp theo giờ VN (GMT+7)
-// CHỈ dùng khi dữ liệu KHÔNG có timestamp riêng
-// Nếu dữ liệu đã có updateTime (ISO string với timezone), 
-// PostgreSQL sẽ TỰ ĐỘNG parse và convert sang GMT+7
+// Helper function: Tạo timestamp hiện tại
+// Trả về ISO string để PostgreSQL parse đúng timezone
 function getVietnamTimestamp() {
-    const now = new Date();
-    // Lấy UTC time và cộng thêm 7 giờ (GMT+7)
-    const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-    
-    // Format: YYYY-MM-DD HH:mm:ss (sử dụng UTC methods vì đã cộng offset)
-    const year = vietnamTime.getUTCFullYear();
-    const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
-    const hours = String(vietnamTime.getUTCHours()).padStart(2, '0');
-    const minutes = String(vietnamTime.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(vietnamTime.getUTCSeconds()).padStart(2, '0');
-    
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    return new Date().toISOString();
 }
 
-// Helper function: Convert bất kỳ timestamp nào sang giờ VN
-// Hỗ trợ: ISO string, Date object, hoặc timestamp string
-// Nếu timestamp đã ở GMT+7, giữ nguyên
-// Nếu timestamp có timezone khác (UTC, etc), convert sang GMT+7
+// Helper function: Chuẩn hóa timestamp về ISO format
+// Lưu timestamp nguyên bản, không convert timezone
+// PostgreSQL sẽ parse và lưu đúng theo timezone của data
 function convertToVietnamTimestamp(timestamp) {
     if (!timestamp) {
         return getVietnamTimestamp();
@@ -76,18 +61,8 @@ function convertToVietnamTimestamp(timestamp) {
             return getVietnamTimestamp();
         }
         
-        // Lấy UTC time và cộng thêm 7 giờ (GMT+7)
-        const vietnamTime = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-        
-        // Format: YYYY-MM-DD HH:mm:ss (sử dụng UTC methods vì đã cộng offset)
-        const year = vietnamTime.getUTCFullYear();
-        const month = String(vietnamTime.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(vietnamTime.getUTCDate()).padStart(2, '0');
-        const hours = String(vietnamTime.getUTCHours()).padStart(2, '0');
-        const minutes = String(vietnamTime.getUTCMinutes()).padStart(2, '0');
-        const seconds = String(vietnamTime.getUTCSeconds()).padStart(2, '0');
-        
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        // Trả về ISO string để PostgreSQL parse đúng
+        return date.toISOString();
     } catch (err) {
         console.warn(`⚠️ Lỗi convert timestamp: ${err.message}, dùng current time`);
         return getVietnamTimestamp();

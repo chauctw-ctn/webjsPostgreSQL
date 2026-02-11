@@ -7,37 +7,77 @@ let currentParameterNames = [];
 let visibleColumnIndices = []; // Indices of columns that have data
 
 /**
- * Format date to dd/mm/yyyy
+ * Format date to dd/mm/yyyy (Vietnam timezone GMT+7)
  */
 function formatDate(date) {
     const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
+    const options = {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    };
+    
+    const formatter = new Intl.DateTimeFormat('en-GB', options);
+    const parts = formatter.formatToParts(d);
+    
+    const day = parts.find(p => p.type === 'day').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const year = parts.find(p => p.type === 'year').value;
+    
     return `${day}/${month}/${year}`;
 }
 
 /**
- * Format date time to dd/mm/yyyy HH:mm:ss
+ * Format date time to dd/mm/yyyy HH:mm:ss (Vietnam timezone GMT+7)
  */
 function formatDateTime(date) {
+    // Parse timestamp và convert sang giờ Việt Nam (GMT+7)
     const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const seconds = String(d.getSeconds()).padStart(2, '0');
+    
+    // Sử dụng toLocaleString với timezone Việt Nam
+    const options = {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    };
+    
+    const formatter = new Intl.DateTimeFormat('en-GB', options);
+    const parts = formatter.formatToParts(d);
+    
+    const day = parts.find(p => p.type === 'day').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const year = parts.find(p => p.type === 'year').value;
+    const hours = parts.find(p => p.type === 'hour').value;
+    const minutes = parts.find(p => p.type === 'minute').value;
+    const seconds = parts.find(p => p.type === 'second').value;
+    
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
 
 /**
- * Format time to HH:mm
+ * Format time to HH:mm (Vietnam timezone GMT+7)
  */
 function formatTime(date) {
     const d = new Date(date);
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const options = {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    };
+    
+    const formatter = new Intl.DateTimeFormat('en-GB', options);
+    const parts = formatter.formatToParts(d);
+    
+    const hours = parts.find(p => p.type === 'hour').value;
+    const minutes = parts.find(p => p.type === 'minute').value;
+    
     return `${hours}:${minutes}`;
 }
 
